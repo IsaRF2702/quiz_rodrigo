@@ -43,12 +43,15 @@ routes.post('/cadastrar', async (req, res) => {
 
 // ESSA É DEDICADA ÁS QUESTÕES mostrar todas questões na tabela
 
-routes.get('/quest/consulta', async (req, res)=>{
+routes.post('/quest/consulta', async (req, res)=>{
     const consulta = await sql `SELECT * FROM quest ORDER BY RANDOM() LIMIT 10;`
-    if(consulta != null && consulta != '')
+    try{
+        if(consulta != null && consulta != '')
         return res.status(200).json(consulta);
-else
-    return res.status(401).json('Usuario ou senha incorretos')
+    }
+    catch(error){
+            return res.status(401).json('Usuario ou senha incorretos')
+        }
 });
 
 routes.post('/quest/cadastrar', async (req, res)=>{
