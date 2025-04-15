@@ -7,16 +7,15 @@ import { CompararHash, CriarHash } from "./utilits.js";
 const routes = express.Router()
 
 routes.post('/login', async (req, res) => {
-    const { email, senha } = req.body
 try{ 
+    const { email, senha } = req.body
     let usuario = await sql`select 
-    * from login where email=${email}
-     and senha=${senha}`
+    * from login where email=${email}`
 
     const teste = await CompararHash(senha, usuario[0].senha)
-
+    
     if(teste) {
-        return res.status(200).json('Deu certo')
+        return res.status(200).json(usuario[0])
     }
     else {
         return res.status(401).json('Usuario ou senha incorreto!')
@@ -42,13 +41,44 @@ routes.post('/cadastrar', async (req, res) => {
     }
 })
 
-// ESSA É DEDICADA ÁS QUESTÕES
+// ESSA É DEDICADA ÁS QUESTÕES mostrar todas questões na tabela
+
+routes.get('/quest/consulta', async (req, res)=>{
+    const consulta = await sql `SELECT * FROM quest ORDER BY RANDOM() LIMIT 10;`
+    if(consulta != null && consulta != '')
+        return res.status(200).json(consulta);
+else
+    return res.status(401).json('Usuario ou senha incorretos')
+});
 
 routes.post('/quest/cadastrar', async (req, res)=>{
     try{
         const {question, option1, option2, option3, option4, gabarito, nivel} = req.body;
         const insert = await sql `insert into quest(question, option1, option2, option3, option4, gabarito, nivel)
         values (${question},${option1},${option2},${option3},${option4}, ${gabarito}, ${nivel})` 
+        return res.status(200).json('ok')
+        }
+    catch(error){
+        return res.status(500).json('Erro de Servidor')
+    }
+});
+
+routes.put('/quest/editar/:id', async (req, res)=>{
+    try{ const {id} = req.params;
+        const {question, option1, option2, option3, option4, gabarito, nivel} = req.body;
+        const insert = await sql ` UPDATE quest
+	SET  ${question},${option1},${option2},${option3},${option4}, ${gabarito}, ${nivel}
+	WHERE id = ${id};` 
+        return res.status(200).json('ok')
+        }
+    catch(error){
+        return res.status(500).json('Erro de Servidor')
+    }
+});
+
+routes.delete('/quest/deletar/:id', async (req, res)=>{
+    try{ const {id} = req.params;
+        const insert = await sql `DELETE FROM quest WHERE id = ${id};`
         return res.status(200).json('ok')
         }
     catch(error){
