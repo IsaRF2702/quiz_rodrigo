@@ -43,7 +43,7 @@ routes.post('/cadastrar', async (req, res) => {
 
 // ESSA É DEDICADA ÁS QUESTÕES mostrar todas questões na tabela
 
-routes.post('/quest/consulta', async (req, res)=>{
+routes.get('/quest/consulta', async (req, res)=>{
     const consulta = await sql `SELECT * FROM quest ORDER BY RANDOM() LIMIT 10;`
     try{
         if(consulta != null && consulta != '')
@@ -62,6 +62,7 @@ routes.post('/quest/cadastrar', async (req, res)=>{
         return res.status(200).json('ok')
         }
     catch(error){
+        console.log(error)
         return res.status(500).json('Erro de Servidor')
     }
 });
@@ -72,16 +73,6 @@ routes.put('/quest/editar/:id', async (req, res)=>{
         const insert = await sql ` UPDATE quest
 	SET  ${question},${option1},${option2},${option3},${option4}, ${gabarito}, ${nivel}
 	WHERE id = ${id};` 
-        return res.status(200).json('ok')
-        }
-    catch(error){
-        return res.status(500).json('Erro de Servidor')
-    }
-});
-
-routes.delete('/quest/deletar/:id', async (req, res)=>{
-    try{ const {id} = req.params;
-        const insert = await sql `DELETE FROM quest WHERE id = ${id};`
         return res.status(200).json('ok')
         }
     catch(error){
