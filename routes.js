@@ -67,17 +67,18 @@ routes.post('/quest/cadastrar', async (req, res)=>{
     }
 });
 
-routes.put('/quest/editar/:id', async (req, res)=>{
-    try{ const {id} = req.params;
-        const {question, option1, option2, option3, option4, gabarito, nivel} = req.body;
-        const insert = await sql ` UPDATE quest
-	SET  ${question},${option1},${option2},${option3},${option4}, ${gabarito}, ${nivel}
-	WHERE id = ${id};` 
-        return res.status(200).json('ok')
-        }
-    catch(error){
-        return res.status(500).json('Erro de Servidor')
+routes.delete('/delete/:id', async(req, res)=>{
+    try{
+        const {id}= req.params
+        await sql`DELETE FROM quest WHERE id = ${id};`
+
+        return res.status(200).json('Questão excluída!!')
     }
-});
+    catch(error){
+        console.log(error)
+        return res.status(404).json('Ocorreu um erro ao deletar questão')
+    }
+})
+
 
 export default routes
